@@ -7,43 +7,60 @@
 package p30
 
 func findSubstring(s string, words []string) []int {
-	var result []int
-	if len(words) == 0 {
-		return result
+	if len(words) == 0 || len(s) == 0 {
+		return nil
 	}
 
-	posIndex := make(map[int][]int)
+	width := len(words[0])
+	number := len(words)
+	window := width * number
+
+	wordCount := make(map[string]int)
+	for _, word := range words {
+		wordCount[word]++
+	}
+
 	length := len(s)
+	var ret []int
 
-	for i, _ := range s {
-		for wi, w := range words {
-			if i+len(w) <= length && s[i:i+len(w)] == w {
-				posIndex[i] = append(posIndex[i], wi)
+	for i := 0; i < width; i++ {
+		start := i
+		for start+window <= length {
+			findAll := true
+			countCopy := copyWordCount(wordCount)
+			for j := start; j < start+window; j += width {
+				word := s[j : j+width]
+				v, ok := countCopy[word]
+				if !ok {
+					findAll = false
+					start = j
+					break
+				}
+
+				if v <= 0 {
+					findAll = false
+					break
+				} else {
+					countCopy[word]--
+				}
 			}
-		}
-	}
-	for i, _ := range s {
-		found := make([]bool, len(words))
-		if isValid(i, words, posIndex, found, 0) {
-			result = append(result, i)
+
+			if findAll {
+				ret = append(ret, start)
+			}
+
+			start += width
 		}
 	}
 
-	return result
+	return ret
 }
 
-func isValid(pos int, words []string, posIndex map[int][]int, found []bool, foundCnt int) bool {
-	if len(found) == foundCnt {
-		return true
+func copyWordCount(wordCount map[string]int) map[string]int {
+	ret := make(map[string]int)
+
+	for key, value := range wordCount {
+		ret[key] = value
 	}
-	for _, cand := range posIndex[pos] {
-		if !found[cand] {
-			found[cand] = true
-			if isValid(pos+len(words[cand]), words, posIndex, found, foundCnt+1) {
-				return true
-			}
-			found[cand] = false
-		}
-	}
-	return false
+	return ret
 }

@@ -11,7 +11,7 @@ import (
 )
 
 func Test_findSubstring(t *testing.T) {
-	//t.Log(findSubstring("barfoothefoobarman", []string{"foo","bar"}))
+	t.Log(findSubstring("barfoothefoobarman", []string{"foo","bar"}))
 	t.Log(findSubstring("wordgoodgoodgoodbestword",
-	[]string{"word","good","best","good"}))
+	[]string{"word","good","best","word"}))
 }
